@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 	"github.com/spf13/cobra"
 	"os"
 
@@ -37,7 +38,27 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+
+		// Get vars. Priority being (highlest to lowest)
+		// CLI
+		// Config
+		// Defaults
+		title = viper.GetString("title")
+		bodyStyle = viper.GetString("body-style")
+		headerStyle = viper.GetString("header-style")
+		headerMessage = viper.GetString("header-message")
+		iframeStyle = viper.GetString("iframe-style")
+
+		// Escape " in url
+		url = strings.Replace(url, "\"", "\\\"", -1)
+
+		// Build and print template
 		html := fmt.Sprintf(template, title, bodyStyle, headerStyle, headerMessage, url, iframeStyle)
+
+		//TODO add flag to writing to file
+		fmt.Println(urlToFilename)
+
+		//TODO add file for automatically launching browser
 		fmt.Println(html)
 	},
 }
@@ -59,32 +80,24 @@ func init() {
 
 	// Optional args
 	titleDefault := "Framed Web Application"
-	rootCmd.PersistentFlags().StringVar(&title, "title", titleDefault, "Title of the PoC page")
+	rootCmd.PersistentFlags().StringVarP(&title, "title", "t", titleDefault, "Title of the PoC page")
 	viper.BindPFlag("title", rootCmd.PersistentFlags().Lookup("title"))
-	viper.SetDefault("title", titleDefault)
 
 	bodyStyleDefault := "background-color:black"
 	rootCmd.PersistentFlags().StringVar(&bodyStyle, "body-style", bodyStyleDefault, "CSS style to be applied to the body")
 	viper.BindPFlag("body-style", rootCmd.PersistentFlags().Lookup("body-style"))
-	viper.SetDefault("body-style", bodyStyleDefault)
 
 	headerStyleDefault := "color:white;"
 	rootCmd.PersistentFlags().StringVar(&headerStyle, "header-style", headerStyleDefault, "CSS style to be applied to the header")
 	viper.BindPFlag("header-style", rootCmd.PersistentFlags().Lookup("header-style"))
-	viper.SetDefault("header-style", headerStyleDefault)
 
 	headerMessageDefault := "The following shows the application embedded in a third party page:"
 	rootCmd.PersistentFlags().StringVar(&headerMessage, "header-message", headerMessageDefault, "Header message above the ifrome")
 	viper.BindPFlag("header-message", rootCmd.PersistentFlags().Lookup("header-message"))
-	viper.SetDefault("header-message", headerMessageDefault)
 
 	iframeStyleDefault := "width:90%%;height:90%%"
 	rootCmd.PersistentFlags().StringVar(&iframeStyle, "iframe-style", iframeStyleDefault, "CSS style of the iframe")
 	viper.BindPFlag("iframe-style", rootCmd.PersistentFlags().Lookup("iframe-style"))
-	viper.SetDefault("iframe-style", iframeStyleDefault)
-
-	// Bind with viper
-	viper.BindPFlag("useViper", rootCmd.PersistentFlags().Lookup("viper"))
 
 }
 
@@ -110,6 +123,7 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
+		//TODO add verbosity flag for this
 		fmt.Println("[*] Using config file:", viper.ConfigFileUsed())
 	}
 }
