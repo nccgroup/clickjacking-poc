@@ -1,0 +1,10 @@
+{
+    "output-to-file": true,
+    "browser-path": "chromium-browser",
+    "no-print": false,
+    "title": "This is an example title for the webpage window",
+    "body-style": "CSS goes here",
+    "header-style": "CSS goes here",
+    "header-message": "Message to be displayed above iframe",
+    "iframe-style": "CSS goes here"
+}

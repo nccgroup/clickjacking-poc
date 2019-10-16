@@ -31,18 +31,32 @@ var template string = `<html>
 <h3 style="%s">%s</h3>
 <iframe src="%s" style="%s"></iframe>
 </body>
-</html`
+</html>`
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "clickjacking-poc",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "A tool to generate clickjacking proof of concepts for a given URL",
+	Long: fmt.Sprintf(`This tool generates a clickjacking proof of concept for a provided URL.
+By default the generated HTML is printed to stdout and also saved to a file based on the name of the site.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Default usage:
+clickjacking-poc -u http://wikipedia.com
+
+The tool can also be configured to open the generated file in a browser. This has been tested with firefox and chromium on Linux:
+clickjacking-poc -u http://wikipedia.com -b chromium-browser
+
+Flags also exist for suppressing the stdout and file output.
+
+A number of optional flags exist that can be used to inject customized styling into the template.
+To see these, check the output of clickjacking-poc -h
+
+The current template for this tool is:
+%s
+
+The tool is also built with with viper in mind for using a configuration file to override the tool defaults and lose the requirement of passing the same flags again and again at the command line.
+
+In theory all viper supported formats should be supported. The configus should start with .clickjacking-poc and be placed in your home directory (use --config to change location). Examples can be found on GitHub. For Viper configuration see https://github.com/spf13/viper`, template),
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// Get vars. Priority being (highlest to lowest): cli arg, config, defaults
@@ -105,13 +119,13 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&outputToFile, "output-to-file", "f", true, "Toggle whether or not you want to write the HTML to a file (default true) (required for opening in browser)")
 	viper.BindPFlag("output-to-file", rootCmd.PersistentFlags().Lookup("output-to-file"))
 
-	rootCmd.PersistentFlags().StringVarP(&browserPath, "browser-path", "b", "", "Format string to launch browser from the command line (%s marks file name in current directory")
+	rootCmd.PersistentFlags().StringVarP(&browserPath, "browser-path", "b", "", "Path to browser binary (if in PATH only the binary name should be required)")
 	viper.BindPFlag("browser-path", rootCmd.PersistentFlags().Lookup("browser-path"))
 
-	rootCmd.PersistentFlags().BoolVarP(&noPrint, "no-print", "n", false, "Use this flag to suppress html output")
+	rootCmd.PersistentFlags().BoolVarP(&noPrint, "no-print", "n", false, "Use this flag to suppress HTML output")
 	viper.BindPFlag("no-print", rootCmd.PersistentFlags().Lookup("no-print"))
 
-	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable information messages")
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable informational messages")
 
 	// Optional formatting args
 	titleDefault := "Framed Web Application"
@@ -127,7 +141,7 @@ func init() {
 	viper.BindPFlag("header-style", rootCmd.PersistentFlags().Lookup("header-style"))
 
 	headerMessageDefault := "The following shows the application embedded in a third party page:"
-	rootCmd.PersistentFlags().StringVarP(&headerMessage, "header-message", "m", headerMessageDefault, "Header message above the ifrome")
+	rootCmd.PersistentFlags().StringVarP(&headerMessage, "header-message", "m", headerMessageDefault, "Message above the iframe")
 	viper.BindPFlag("header-message", rootCmd.PersistentFlags().Lookup("header-message"))
 
 	iframeStyleDefault := "width:90%%;height:90%%"
