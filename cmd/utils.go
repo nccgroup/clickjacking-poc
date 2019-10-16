@@ -33,31 +33,17 @@ func writeFile(fileName string, fileContents string) {
 	if err != nil {
 		errMsg(fmt.Sprintf("Error writing to file %s", fileName))
 	}
-	if verbose {
-		infoMsg(fmt.Sprintf("Writing to file %s", fileName))
-	}
+	infoMsg(fmt.Sprintf("Writing to file %s", fileName))
 }
 
-func openBrowser(fileName string, browserFString string) {
-	// Ensure that the correct number of %s exist in browserFString
-	if strings.Count(browserFString, "%s") == 0 {
-		errMsg("%s not supplied in browser format string!")
-	}
+func openBrowser(fileName string) {
+	infoMsg(fmt.Sprintf("Attempting to use browser: %s", browserPath))
 
 	// Build command string and try to run
-	command := fmt.Sprintf(browserFString, fileName)
-	if verbose {
-		infoMsg(fmt.Sprintf("Attempting to run command: %s", command))
-	}
-	cmd := exec.Command(command)
-	if verbose {
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-	}
+	cmd := exec.Command(browserPath, fileName)
 	err := cmd.Run()
 	if err != nil {
-		panic(err)
-		errMsg(fmt.Sprintf("Error running browser program: %s", command))
+		errMsg(fmt.Sprintf("Error running browser program: %s", browserPath))
 	}
 }
 
@@ -67,5 +53,7 @@ func errMsg(errorMessage string) {
 }
 
 func infoMsg(infoMsg string) {
-	fmt.Println(fmt.Sprintf("[*] %s", infoMsg))
+	if verbose {
+		fmt.Println(fmt.Sprintf("[*] %s", infoMsg))
+	}
 }

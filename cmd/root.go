@@ -13,7 +13,7 @@ var (
 	cfgFile string
 	url string
 	outputToFile bool
-	browserFString string
+	browserPath string
 	noPrint bool
 	verbose bool
 
@@ -65,16 +65,22 @@ to quickly create a Cobra application.`,
 			writeFile(fileName, html)
 		}
 
-		// Open in browser
-		browserFString = viper.GetString("browser-fstring")
-		if browserFString != "" && outputToFile == false {
+		// Open generated file in browser
+		browserPath = viper.GetString("browser-path")
+
+		// If the output of the html to a file has been suppresed we can't open
+		// it in a browser
+		if browserPath != "" && outputToFile == false {
 			errMsg("Can't set output to file as false when trying to open file in browser")
-		} else {
-			openBrowser(fileName, browserFString)
+
+		// If browser path not set
+		} else if browserPath != ""{
+			openBrowser(fileName)
 		}
 
 		// Output to stdout if not suppressed
-		if ! noPrint {
+		if noPrint == true {
+			infoMsg("Generated HTML:")
 			fmt.Println(html)
 		}
 	},
@@ -96,12 +102,11 @@ func init() {
 	rootCmd.MarkFlagRequired("url")
 
 	// Optional input
-	//TODO make this flag editable
-	rootCmd.PersistentFlags().BoolVarP(&outputToFile, "output-to-file", "f", true, "Select this if you want to write a file of HTML to the current dir")
+	rootCmd.PersistentFlags().BoolVarP(&outputToFile, "output-to-file", "f", true, "Toggle whether or not you want to write the HTML to a file (default true) (required for opening in browser)")
 	viper.BindPFlag("output-to-file", rootCmd.PersistentFlags().Lookup("output-to-file"))
 
-	rootCmd.PersistentFlags().StringVarP(&browserFString, "browser-fstring", "p", "", "Format string to launch browser from the command line (%s marks file name in current directory")
-	viper.BindPFlag("browser-fstring", rootCmd.PersistentFlags().Lookup("browser-fstring"))
+	rootCmd.PersistentFlags().StringVarP(&browserPath, "browser-path", "b", "", "Format string to launch browser from the command line (%s marks file name in current directory")
+	viper.BindPFlag("browser-path", rootCmd.PersistentFlags().Lookup("browser-path"))
 
 	rootCmd.PersistentFlags().BoolVarP(&noPrint, "no-print", "n", false, "Use this flag to suppress html output")
 	viper.BindPFlag("no-print", rootCmd.PersistentFlags().Lookup("no-print"))
@@ -114,11 +119,11 @@ func init() {
 	viper.BindPFlag("title", rootCmd.PersistentFlags().Lookup("title"))
 
 	bodyStyleDefault := "background-color:black"
-	rootCmd.PersistentFlags().StringVarP(&bodyStyle, "body-style", "b", bodyStyleDefault, "CSS style to be applied to the body")
+	rootCmd.PersistentFlags().StringVarP(&bodyStyle, "body-style", "s", bodyStyleDefault, "CSS style to be applied to the body")
 	viper.BindPFlag("body-style", rootCmd.PersistentFlags().Lookup("body-style"))
 
 	headerStyleDefault := "color:white;"
-	rootCmd.PersistentFlags().StringVarP(&headerStyle, "header-style", "s", headerStyleDefault, "CSS style to be applied to the header")
+	rootCmd.PersistentFlags().StringVarP(&headerStyle, "header-style", "y", headerStyleDefault, "CSS style to be applied to the header")
 	viper.BindPFlag("header-style", rootCmd.PersistentFlags().Lookup("header-style"))
 
 	headerMessageDefault := "The following shows the application embedded in a third party page:"
@@ -153,9 +158,8 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		//TODO add verbosity flag for this
-		if verbose {
-			fmt.Println("[*] Using config file:", viper.ConfigFileUsed())
-		}
+		infoMsg(fmt.Sprintf("Using config file: %s", viper.ConfigFileUsed()))
+	} else {
+		errMsg(fmt.Sprintf("Error using config file %s ! Is it formatted correctly?", viper.ConfigFileUsed()))
 	}
 }
