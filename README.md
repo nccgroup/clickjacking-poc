@@ -2,13 +2,22 @@
 
 A basic tool to generate clickjacking proof of concepts based on a given URL.
 
+# Building
+
+Building should be simple...
+
+    $ go get
+    $ go build
+
+## Usage
+
 Basic usage:
 
 `clickjacking-poc -u https://example.com`
 
 The tool can also be used to open the PoC up in the browser:
 
-`Clickjacking-poc -b chromium-browser -u https://example.com`
+`clickjacking-poc -b chromium-browser -u https://example.com`
 
 Additional options exist for styling the template as well as supressing stdout and file output.
 
