@@ -1,6 +1,6 @@
 package main
 
-import "clickjacking-poc/cmd"
+import "github.com/nccgroup/clickjacking-poc/cmd"
 
 func main() {
 	cmd.Execute()
