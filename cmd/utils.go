@@ -3,10 +3,10 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
-	"regexp"
-	"strings"
 	"os"
 	"os/exec"
+	"regexp"
+	"strings"
 )
 
 func urlToFileName(url string) string {
@@ -24,7 +24,7 @@ func urlToFileName(url string) string {
 		}
 	}
 
-	// Add extention
+	// Add extension
 	return fmt.Sprintf("%s.html", strings.Join(fileName, ""))
 }
 

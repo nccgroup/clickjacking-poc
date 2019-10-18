@@ -19,7 +19,7 @@ The tool can also be used to open the PoC up in the browser:
 
 `clickjacking-poc -b chromium-browser -u https://example.com`
 
-Additional options exist for styling the template as well as supressing stdout and file output.
+Additional options exist for styling the template as well as suppressing stdout and file output.
 
 To see all available options and a more verbose summary of the usage of the tool run:
 

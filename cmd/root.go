@@ -100,6 +100,7 @@ In theory all viper supported formats should be supported. The configus should s
 	},
 }
 
+// Execute is the entry point for main.go
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
