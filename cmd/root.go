@@ -2,26 +2,26 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
-	"github.com/spf13/cobra"
-	"os"
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"os"
+	"strings"
 )
 
 var (
-	cfgFile string
-	url string
+	cfgFile      string
+	url          string
 	outputToFile bool
-	browserPath string
-	noPrint bool
-	verbose bool
+	browserPath  string
+	noPrint      bool
+	verbose      bool
 
-	title string
-	bodyStyle string
-	headerStyle string
+	title         string
+	bodyStyle     string
+	headerStyle   string
 	headerMessage string
-	iframeStyle string
+	iframeStyle   string
 )
 
 var template string = `<html>
@@ -87,8 +87,8 @@ In theory all viper supported formats should be supported. The configus should s
 		if browserPath != "" && outputToFile == false {
 			errMsg("Can't set output to file as false when trying to open file in browser")
 
-		// If browser path not set
-		} else if browserPath != ""{
+			// If browser path not set
+		} else if browserPath != "" {
 			openBrowser(fileName)
 		}
 
@@ -173,7 +173,5 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		infoMsg(fmt.Sprintf("Using config file: %s", viper.ConfigFileUsed()))
-	} else {
-		errMsg(fmt.Sprintf("Error using config file %s ! Is it formatted correctly?", viper.ConfigFileUsed()))
 	}
 }
